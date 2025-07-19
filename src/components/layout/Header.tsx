@@ -34,18 +34,39 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center space-x-1 text-foreground hover:text-primary transition-colors">
+                <span>Products</span>
+                <ChevronDown className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                <DropdownMenuItem>
+                  <Link to="/vegetables" className="w-full">Fresh Vegetables</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/fruits" className="w-full">Fresh Fruits</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/meals" className="w-full">Meal Subscription</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/food" className="w-full">All Products</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center space-x-1 text-foreground hover:text-primary transition-colors">
                 <span>Services</span>
                 <ChevronDown className="w-4 h-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-48">
                 <DropdownMenuItem>
-                  <Link to="/b2b" className="w-full">B2B Solutions</Link>
+                  <Link to="/b2b-solutions" className="w-full">B2B Solutions</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/b2c" className="w-full">Direct to Consumer</Link>
+                  <Link to="/d2c-services" className="w-full">Direct to Consumer</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/institutional" className="w-full">Institutional</Link>
+                  <Link to="/institutional-services" className="w-full">Institutional</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -54,16 +75,12 @@ const Header = () => {
               How it Works
             </Link>
 
-            <Link to="/farmers" className="text-foreground hover:text-primary transition-colors">
+            <Link to="/for-farmers" className="text-foreground hover:text-primary transition-colors">
               For Farmers
             </Link>
 
-            <Link to="/sustainability" className="text-foreground hover:text-primary transition-colors">
-              Sustainability
-            </Link>
-
-            <Link to="/about" className="text-foreground hover:text-primary transition-colors">
-              About
+            <Link to="/track-order" className="text-foreground hover:text-primary transition-colors">
+              Track Order
             </Link>
           </nav>
 
@@ -86,6 +103,9 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Link to="/profile" className="w-full">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link to="/signin" className="w-full">Sign In</Link>
                 </DropdownMenuItem>

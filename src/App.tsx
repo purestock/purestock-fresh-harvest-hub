@@ -14,6 +14,10 @@ import B2BSolutions from "./pages/B2BSolutions";
 import D2CServices from "./pages/D2CServices";
 import InstitutionalServices from "./pages/InstitutionalServices";
 import OrderTracking from "./pages/OrderTracking";
+import Vegetables from "./pages/Vegetables";
+import Fruits from "./pages/Fruits";
+import MealSubscription from "./pages/MealSubscription";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -26,12 +30,16 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/food" element={<Food />} />
+          <Route path="/vegetables" element={<Vegetables />} />
+          <Route path="/fruits" element={<Fruits />} />
+          <Route path="/meals" element={<MealSubscription />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/for-farmers" element={<ForFarmers />} />
           <Route path="/b2b-solutions" element={<B2BSolutions />} />
           <Route path="/d2c-services" element={<D2CServices />} />
           <Route path="/institutional-services" element={<InstitutionalServices />} />
           <Route path="/track-order" element={<OrderTracking />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
