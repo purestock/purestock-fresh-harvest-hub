@@ -17,6 +17,7 @@ import OrderTracking from "./pages/OrderTracking";
 import Vegetables from "./pages/Vegetables";
 import Fruits from "./pages/Fruits";
 import MealSubscription from "./pages/MealSubscription";
+import Meals from "./pages/Meals";
 import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
@@ -32,7 +33,8 @@ const App = () => (
           <Route path="/food" element={<Food />} />
           <Route path="/vegetables" element={<Vegetables />} />
           <Route path="/fruits" element={<Fruits />} />
-          <Route path="/meals" element={<MealSubscription />} />
+          <Route path="/meal-subscription" element={<MealSubscription />} />
+          <Route path="/meals" element={<Meals />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/for-farmers" element={<ForFarmers />} />
           <Route path="/b2b-solutions" element={<B2BSolutions />} />
