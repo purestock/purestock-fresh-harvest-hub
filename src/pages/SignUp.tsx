@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -14,11 +16,52 @@ const SignUp = () => {
     password: '',
     role: 'consumer'
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Registration logic will be added when Supabase is connected
-    console.log('Sign up:', formData);
+    setLoading(true);
+    setError('');
+
+    try {
+      // Sign up the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            name: formData.name,
+            role: formData.role
+          }
+        }
+      });
+
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          setError('An account with this email already exists. Please sign in instead.');
+        } else {
+          setError(authError.message);
+        }
+        return;
+      }
+
+      if (authData.user) {
+        toast({
+          title: "Account created successfully!",
+          description: "Welcome to Purestock. You can now start shopping.",
+        });
+        navigate('/');
+      }
+    } catch (error: any) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,6 +76,12 @@ const SignUp = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
@@ -102,8 +151,8 @@ const SignUp = () => {
               </RadioGroup>
             </div>
 
-            <Button type="submit" className="w-full bg-gradient-primary">
-              Create Account
+            <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </form>

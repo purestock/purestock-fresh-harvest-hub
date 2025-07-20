@@ -1,19 +1,54 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Authentication logic will be added when Supabase is connected
-    console.log('Sign in:', { email, password });
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        if (authError.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials and try again.');
+        } else {
+          setError(authError.message);
+        }
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
+        navigate('/');
+      }
+    } catch (error: any) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Signin error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,6 +63,12 @@ const SignIn = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -58,8 +99,8 @@ const SignIn = () => {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-gradient-primary">
-              Sign In
+            <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </form>
