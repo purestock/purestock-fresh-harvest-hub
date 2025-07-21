@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User, ChevronDown } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, ShoppingCart, User, ChevronDown, LogOut, Settings, UserCog } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -13,9 +14,16 @@ import { Badge } from '@/components/ui/badge';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount] = useState(3); // Mock cart count
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -95,29 +103,69 @@ const Header = () => {
               )}
             </Link>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                  <User className="w-4 h-4" />
-                  <span>Account</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Link to="/profile" className="w-full">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/signin" className="w-full">Sign In</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/signup" className="w-full">Sign Up</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-gradient-primary rounded-full flex items-center justify-center text-white text-xs">
+                      {profile?.name?.[0] || user.email?.[0] || 'U'}
+                    </div>
+                    <span>{profile?.name || user.email?.split('@')[0] || 'User'}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link to="/profile" className="w-full flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  {profile?.role === 'admin' && (
+                    <DropdownMenuItem>
+                      <Link to="/admin" className="w-full flex items-center">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {profile?.role === 'delivery_agent' && (
+                    <DropdownMenuItem>
+                      <Link to="/delivery" className="w-full flex items-center">
+                        <UserCog className="w-4 h-4 mr-2" />
+                        Delivery Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span>Account</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link to="/signin" className="w-full">Sign In</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/signup" className="w-full">Sign Up</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
-            <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-              Join Purestock
-            </Button>
+{!user && (
+              <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
+                <Link to="/signup">Join Purestock</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -157,12 +205,20 @@ const Header = () => {
                     </Badge>
                   )}
                 </Link>
-                <Link to="/signin">
-                  <Button variant="outline" size="sm">Sign In</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button size="sm" className="bg-gradient-primary">Join Now</Button>
-                </Link>
+                {user ? (
+                  <Button variant="outline" size="sm" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                ) : (
+                  <>
+                    <Link to="/signin">
+                      <Button variant="outline" size="sm">Sign In</Button>
+                    </Link>
+                    <Link to="/signup">
+                      <Button size="sm" className="bg-gradient-primary">Join Now</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
