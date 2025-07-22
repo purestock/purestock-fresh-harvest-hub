@@ -76,6 +76,9 @@ const Header = () => {
                 <DropdownMenuItem>
                   <Link to="/institutional-services" className="w-full">Institutional</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/delivery-services" className="w-full">Delivery Services</Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -89,6 +92,10 @@ const Header = () => {
 
             <Link to="/track-order" className="text-foreground hover:text-primary transition-colors">
               Track Order
+            </Link>
+            
+            <Link to="/delivery-partner" className="text-foreground hover:text-primary transition-colors">
+              Join as Partner
             </Link>
           </nav>
 
