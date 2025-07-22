@@ -22,6 +22,7 @@ import Meals from "./pages/Meals";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import DeliveryAgent from "./pages/DeliveryAgent";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/delivery" element={<DeliveryAgent />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

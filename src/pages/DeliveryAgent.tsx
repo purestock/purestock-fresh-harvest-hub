@@ -89,6 +89,11 @@ const DeliveryAgent = () => {
         updateData.delivery_notes = notes;
       }
 
+      if (newStatus === 'picked_up') {
+        updateData.delivery_person_name = profile?.name || 'Delivery Agent';
+        updateData.delivery_person_phone = profile?.phone || '';
+      }
+
       if (newStatus === 'delivered') {
         updateData.actual_delivery = new Date().toISOString();
       }
@@ -104,6 +109,24 @@ const DeliveryAgent = () => {
       fetchDeliveryData();
     } catch (error) {
       console.error('Error updating delivery status:', error);
+    }
+  };
+
+  const assignToSelf = async (deliveryId: string) => {
+    try {
+      const { error } = await supabase
+        .from('delivery_tracking')
+        .update({
+          delivery_person_name: profile?.name || 'Delivery Agent',
+          delivery_person_phone: profile?.phone || '',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', deliveryId);
+
+      if (error) throw error;
+      fetchDeliveryData();
+    } catch (error) {
+      console.error('Error assigning delivery:', error);
     }
   };
 
@@ -254,17 +277,37 @@ const DeliveryAgent = () => {
                           </div>
                         )}
 
+                        {delivery.delivery_address && (
+                          <div className="mb-4 p-3 bg-muted rounded-lg">
+                            <p className="text-sm font-medium mb-1">Delivery Address:</p>
+                            <p className="text-sm text-muted-foreground">{delivery.delivery_address}</p>
+                          </div>
+                        )}
+
                         <div className="flex flex-col space-y-2">
                           <Textarea 
                             placeholder="Add delivery notes..."
                             className="min-h-[60px]"
                             defaultValue={delivery.delivery_notes || ''}
+                            id={`notes-${delivery.id}`}
                           />
-                          <div className="flex space-x-2">
-                            {delivery.status === 'pending' && (
+                          <div className="flex flex-wrap gap-2">
+                            {delivery.status === 'pending' && !delivery.delivery_person_name && (
                               <Button 
                                 size="sm" 
-                                onClick={() => updateDeliveryStatus(delivery.id, 'picked_up')}
+                                onClick={() => assignToSelf(delivery.id)}
+                                variant="outline"
+                              >
+                                Assign to Me
+                              </Button>
+                            )}
+                            {delivery.status === 'pending' && delivery.delivery_person_name && (
+                              <Button 
+                                size="sm" 
+                                onClick={() => {
+                                  const notes = (document.getElementById(`notes-${delivery.id}`) as HTMLTextAreaElement)?.value;
+                                  updateDeliveryStatus(delivery.id, 'picked_up', notes);
+                                }}
                               >
                                 Mark as Picked Up
                               </Button>
@@ -272,7 +315,10 @@ const DeliveryAgent = () => {
                             {delivery.status === 'picked_up' && (
                               <Button 
                                 size="sm" 
-                                onClick={() => updateDeliveryStatus(delivery.id, 'in_transit')}
+                                onClick={() => {
+                                  const notes = (document.getElementById(`notes-${delivery.id}`) as HTMLTextAreaElement)?.value;
+                                  updateDeliveryStatus(delivery.id, 'in_transit', notes);
+                                }}
                               >
                                 Mark in Transit
                               </Button>
@@ -280,7 +326,10 @@ const DeliveryAgent = () => {
                             {delivery.status === 'in_transit' && (
                               <Button 
                                 size="sm" 
-                                onClick={() => updateDeliveryStatus(delivery.id, 'delivered')}
+                                onClick={() => {
+                                  const notes = (document.getElementById(`notes-${delivery.id}`) as HTMLTextAreaElement)?.value;
+                                  updateDeliveryStatus(delivery.id, 'delivered', notes);
+                                }}
                                 className="bg-green-600 hover:bg-green-700"
                               >
                                 Mark as Delivered
